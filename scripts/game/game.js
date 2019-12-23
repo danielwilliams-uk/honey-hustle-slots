@@ -149,7 +149,25 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             // console.log('honeycomb.y: ', honeycomb.y);
             // console.log('honeycomb.x: ', honeycomb.x);
 
+            // Update game state
+            state = play;
+
+            // Start game loop
+            gameLoop();
+        }
+
+        function gameLoop () {
+            window.requestAnimationFrame(gameLoop);
+            state();
             renderer.render(stage);
+        }
+
+        function play () {
+
+        }
+
+        function gameOver () {
+
         }
     }
 });
