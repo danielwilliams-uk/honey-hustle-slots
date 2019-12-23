@@ -1,0 +1,92 @@
+{"frames": {
+
+"bear.png":
+{
+	"frame": {"x":0,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"bee.png":
+{
+	"frame": {"x":196,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"blue-bee.png":
+{
+	"frame": {"x":392,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"bomb.png":
+{
+	"frame": {"x":588,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"button.png":
+{
+	"frame": {"x":784,"y":0,"w":98,"h":98},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":98,"h":98},
+	"sourceSize": {"w":98,"h":98}
+},
+"green-bee.png":
+{
+	"frame": {"x":882,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"green-frog.png":
+{
+	"frame": {"x":1078,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"pot.png":
+{
+	"frame": {"x":1274,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"red-bee.png":
+{
+	"frame": {"x":1470,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+},
+"red-frog.png":
+{
+	"frame": {"x":1666,"y":0,"w":196,"h":170},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":196,"h":170},
+	"sourceSize": {"w":196,"h":170}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "symbols.png",
+	"format": "RGBA8888",
+	"size": {"w":1862,"h":170},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:36b85f11f60028d4ff840d4bdbb3606a:e0106a23001c7723ec32acea2c7540d5:d295ed7153fe372207e34d26d380974a$"
+}
+}
