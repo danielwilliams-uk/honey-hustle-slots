@@ -37,7 +37,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             HONEY_COMB_CELL_HEIGHT = 170,
             SPACE = 7,
             INDENT = 30,
-            reelsArray = [];
+            reelsArray = [],
+            state;
 
          console.log('stage.width: ', WIDTH);
          console.log('stage.height: ', HEIGHT);
@@ -89,7 +90,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             // Make button interactive
             button.interactive = true;
             button.buttonMode = true;
-            button.x = WIDTH / 2;
+            button.x = WIDTH / 2 - button.width / 2;
             button.y = HEIGHT - button.height * 2;
 
             // Create a container to store a group of display objects, ie. a reelContainer will store all reel objects (DisplayObjects)
