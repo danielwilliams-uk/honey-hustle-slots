@@ -93,6 +93,12 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             button.x = WIDTH / 2 - button.width / 2;
             button.y = HEIGHT - button.height * 2;
 
+            button
+                .on('mousedown', function () {
+                    console.log('click!');
+                    spin = true;
+                })
+
             // Create a container to store a group of display objects, ie. a reelContainer will store all reel objects (DisplayObjects)
             var reelContainer = new PIXI.Container();
 
