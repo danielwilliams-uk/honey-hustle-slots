@@ -2,11 +2,6 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
     return function () {
 
-/*        window.addEventListener('resize', function () {
-            scaleToWindow(renderer.view);
-        });*/
-
-
         // Aliases
         var Container = PIXI.Container,
             autoDetectRenderer = PIXI.autoDetectRenderer,
@@ -38,10 +33,9 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             SPACE = 7,
             INDENT = 30,
             reelsArray = [],
-            state;
-
-         console.log('stage.width: ', WIDTH);
-         console.log('stage.height: ', HEIGHT);
+            slotTextures = [],
+            state,
+            i;
 
         // Load resources
         loader
@@ -51,14 +45,18 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 "images/symbols.json"
         ])
             .load(setup);
+
+        function randomNumber (num) {
+            return Math.floor(Math.random() * num);
+        };
         
         function setup () {
 
-            // Create an alias
+            // Create alias
             var id = PIXI.loader.resources['images/symbols.json'].textures;
 
             // Create textures
-            var slotTextures = [
+            slotTextures.push(
                 id['bear.png'],
                 id['bee.png'],
                 id['blue-bee.png'],
@@ -68,7 +66,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 id['pot.png'],
                 id['red-bee.png'],
                 id['red-frog.png']
-            ];
+            );
 
             // Create honeycomb sprite
             var honeycombTexture =  PIXI.utils.TextureCache['images/honeycomb.png'];
@@ -81,7 +79,6 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             var maskTexture = PIXI.utils.TextureCache['images/background.png'];
             mask = new Sprite(maskTexture);
             mask.x =  stage.x - (honeycomb.width / 2) + SPACE;
-
 
             // Create button sprite
             var buttonTexture = TextureCache['button.png'];
@@ -97,49 +94,52 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 .on('mousedown', function () {
                     console.log('click!');
                     spin = true;
-                })
+                });
 
-            // Create a container to store a group of display objects, ie. a reelContainer will store all reel objects (DisplayObjects)
             var reelContainer = new PIXI.Container();
 
-            // Build the 5 child reels
-            for (var i = 0; i < 5; i++) {
+            // Build child reels
+            for (i = 0; i < 5; i++) {
+                var symbolArray = [],
+                    randomImageNumbers = [],
+                    num;
 
                 var reelChild = new PIXI.Container();
 
                 reelChild.x = i * ((REEL_WIDTH - INDENT) - 20);
 
-                console.log('reelChild.x: ', reelChild.x);
-
                 if (i % 2 === 0) {
-                    reelChild.y = 0 - SYMBOL_HEIGHT * 2;
+                    reelChild.y = 0;
                 } else {
-                    reelChild.y = HONEY_COMB_CELL_HEIGHT / 2;
+                    reelChild.y = 0 + SYMBOL_HEIGHT / 2;
                 }
 
                 reelContainer.addChild(reelChild);
 
                 // reelObject
                 var reelObject = {
-                    x: 0,
-                    y: 0,
                     container: reelChild,
                     symbols:[],
-                    position:0,
-                    previousPosition:0
+                    vy: 0,
+                    y: 0
                 };
 
-                for (var j = 0; j < 10; j++) {
-                    // Choose a random symbol
-                    var symbol = new Sprite(slotTextures[ Math.floor(Math.random() * slotTextures.length)]);
-                    //Position symbol by y value * j
+                // Initialise reels at start
+                // Generate random number between 0 and 3
+                for (var ii = 0; ii < 3; ii++) { // Where 3 is the number of visible symbols on each reel
+                    num = randomNumber(9); // Where 3 is the number of symbols
+                    randomImageNumbers.push(num);
+                }
+                console.log('randomImageNumbers: ', randomImageNumbers);
+
+                for (var j = 0; j < 3; j++) {
+                    var symbol = new Sprite(slotTextures[randomImageNumbers[j]]);
+                    symbolArray.push(symbol);
+                    // Position symbol vertically
                     symbol.y = j * SYMBOL_HEIGHT;
-                    // Add symbol to symbols array in reelObject
                     reelObject.symbols.push(symbol);
-                    // Add symbol to reel container
                     reelChild.addChild(symbol);
                 }
-                // Add reelObject to the reels array
                 reelsArray.push(reelObject);
             }
 
@@ -169,7 +169,23 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
         }
 
         function play () {
+            if (spin) {
+                spin = null;
 
+                for (i = 0; i < reelsArray.length; i++  ) {
+                    // Iterate through every reelChild
+                    var reel = reelsArray[i];
+                    var symbols = reel.symbols;
+
+                    // Do a texture swap
+                    for (var j = 0; j < symbols.length; j++) {
+                        var randomSymbol = randomNumber(3);
+                        var randomTexture = randomNumber(9);
+                        symbols[randomSymbol].texture = slotTextures[randomTexture];
+                    }
+                }
+
+            }
         }
 
         function gameOver () {
