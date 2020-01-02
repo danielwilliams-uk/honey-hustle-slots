@@ -30,11 +30,15 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             SYMBOL_HEIGHT = 170,
             HONEY_COMB_CELL_WIDTH = 196,
             HONEY_COMB_CELL_HEIGHT = 170,
+			TOTAL_SYMBOLS_REEL = 4,
+			ALL_SYMBOLS = 9,
+			TOTAL_REELS = 5,
             SPACE = 7,
             INDENT = 30,
             reelsArray = [],
             slotTextures = [],
             state,
+			allSymbols = [],
             i;
 
         // Load resources
@@ -67,6 +71,12 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 id['red-bee.png'],
                 id['red-frog.png']
             );
+			
+			// Create all symbols
+			for (i = 0; i < ALL_SYMBOLS; i++) {
+				var symbol = new Sprite(slotTextures[i]);
+				allSymbols.push(symbol);
+			}
 
             // Create honeycomb sprite
             var honeycombTexture =  PIXI.utils.TextureCache['images/honeycomb.png'];
@@ -99,9 +109,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             var reelContainer = new PIXI.Container();
 
             // Build child reels
-            for (i = 0; i < 5; i++) {
-                var symbolArray = [],
-                    randomImageNumbers = [],
+            for (i = 0; i < TOTAL_REELS; i++) {
+                var randomImageNumbers = [],
                     num;
 
                 var reelChild = new PIXI.Container();
@@ -119,22 +128,22 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 // reelObject
                 var reelObject = {
                     container: reelChild,
+					symbolIndexes: [],
                     symbols:[],
                     vy: 0,
                     y: 0
                 };
 
                 // Initialise reels at start
-                // Generate random number between 0 and 3
-                for (var ii = 0; ii < 3; ii++) { // Where 3 is the number of visible symbols on each reel
-                    num = randomNumber(9); // Where 3 is the number of symbols
+                for (var ii = 0; ii < TOTAL_SYMBOLS_REEL; ii++) {
+                    num = randomNumber(9); 
                     randomImageNumbers.push(num);
+					reelObject.symbolIndexes.push(num);
                 }
-                console.log('randomImageNumbers: ', randomImageNumbers);
+                // console.log('randomImageNumbers: ', randomImageNumbers);
 
-                for (var j = 0; j < 3; j++) {
+                for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
                     var symbol = new Sprite(slotTextures[randomImageNumbers[j]]);
-                    symbolArray.push(symbol);
                     // Position symbol vertically
                     symbol.y = j * SYMBOL_HEIGHT;
                     reelObject.symbols.push(symbol);
@@ -151,7 +160,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
 
             reelContainer.x = honeycomb.x;
-            reelContainer.y = honeycomb.y;
+            reelContainer.y = honeycomb.y - SYMBOL_HEIGHT;
             // console.log('honeycomb.y: ', honeycomb.y);
             // console.log('honeycomb.x: ', honeycomb.x);
 
@@ -172,16 +181,21 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             if (spin) {
                 spin = null;
 
-                for (i = 0; i < reelsArray.length; i++  ) {
+                for (i = 0; i < reelsArray.length; i++
+                ) {
                     // Iterate through every reelChild
-                    var reel = reelsArray[i];
-                    var symbols = reel.symbols;
+                    var reelObject = reelsArray[i];
+                    var symbols = reelObject.symbols;
 
-                    // Do a texture swap
+                    // Update symbol positions
                     for (var j = 0; j < symbols.length; j++) {
-                        var randomSymbol = randomNumber(3);
-                        var randomTexture = randomNumber(9);
-                        symbols[randomSymbol].texture = slotTextures[randomTexture];
+						var symbol = symbols[j];
+						var posY = j * SYMBOL_HEIGHT;
+						TweenLite.to(symbol, 2, {y: posY + SYMBOL_HEIGHT});
+						
+                        // var randomSymbol = randomNumber(3);
+                        // var randomTexture = randomNumber(9);
+                        // symbols[j].texture = slotTextures[randomTexture];
                     }
                 }
 
