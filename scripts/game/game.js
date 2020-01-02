@@ -30,15 +30,15 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             SYMBOL_HEIGHT = 170,
             HONEY_COMB_CELL_WIDTH = 196,
             HONEY_COMB_CELL_HEIGHT = 170,
-			TOTAL_SYMBOLS_REEL = 4,
-			ALL_SYMBOLS = 9,
-			TOTAL_REELS = 5,
+            TOTAL_SYMBOLS_REEL = 4,
+            ALL_SYMBOLS = 9,
+            TOTAL_REELS = 5,
             SPACE = 7,
             INDENT = 30,
             reelsArray = [],
             slotTextures = [],
             state,
-			allSymbols = [],
+            allSymbols = [],
             i;
 
         // Load resources
