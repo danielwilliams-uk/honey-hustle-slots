@@ -192,10 +192,6 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 						var symbol = symbols[j];
 						var posY = j * SYMBOL_HEIGHT;
 						TweenLite.to(symbol, 2, {y: posY + SYMBOL_HEIGHT});
-						
-                        // var randomSymbol = randomNumber(3);
-                        // var randomTexture = randomNumber(9);
-                        // symbols[j].texture = slotTextures[randomTexture];
                     }
                 }
 
