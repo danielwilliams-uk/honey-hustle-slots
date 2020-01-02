@@ -72,11 +72,11 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 id['red-frog.png']
             );
 			
-			// Create all symbols
-			for (i = 0; i < ALL_SYMBOLS; i++) {
-				var symbol = new Sprite(slotTextures[i]);
-				allSymbols.push(symbol);
-			}
+            // Create all symbols
+            for (i = 0; i < ALL_SYMBOLS; i++) {
+                var symbol = new Sprite(slotTextures[i]);
+                allSymbols.push(symbol);
+            }
 
             // Create honeycomb sprite
             var honeycombTexture =  PIXI.utils.TextureCache['images/honeycomb.png'];
@@ -128,7 +128,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 // reelObject
                 var reelObject = {
                     container: reelChild,
-					symbolIndexes: [],
+                    symbolIndexes: [],
                     symbols:[],
                     vy: 0,
                     y: 0
@@ -138,7 +138,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 for (var ii = 0; ii < TOTAL_SYMBOLS_REEL; ii++) {
                     num = randomNumber(9); 
                     randomImageNumbers.push(num);
-					reelObject.symbolIndexes.push(num);
+                    reelObject.symbolIndexes.push(num);
                 }
                 // console.log('randomImageNumbers: ', randomImageNumbers);
 
@@ -181,20 +181,18 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             if (spin) {
                 spin = null;
 
-                for (i = 0; i < reelsArray.length; i++
-                ) {
+                for (i = 0; i < reelsArray.length; i++) {
                     // Iterate through every reelChild
                     var reelObject = reelsArray[i];
                     var symbols = reelObject.symbols;
 
                     // Update symbol positions
                     for (var j = 0; j < symbols.length; j++) {
-						var symbol = symbols[j];
-						var posY = j * SYMBOL_HEIGHT;
-						TweenLite.to(symbol, 2, {y: posY + SYMBOL_HEIGHT});
+                        var symbol = symbols[j];
+                        var posY = j * SYMBOL_HEIGHT;
+                        TweenLite.to(symbol, 2, {y: posY + SYMBOL_HEIGHT});
                     }
                 }
-
             }
         }
 
