@@ -2,27 +2,22 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
     return function () {
 
-        // Aliases
-        var Container = PIXI.Container,
-            autoDetectRenderer = PIXI.autoDetectRenderer,
-            TextureCache = PIXI.utils.TextureCache,
-            Graphics = PIXI.Graphics,
+        var app = new PIXI.Application({
+                width: 2267, height: 1275
+            }),
             Sprite = PIXI.Sprite,
-            loader = PIXI.loader,
-            Text = PIXI.Text;
+            loader = PIXI.Loader.shared;
 
-        var renderer = autoDetectRenderer(1500, 1275);
-        var stage = new PIXI.Container();
-        document.body.appendChild(renderer.view);
+        document.body.appendChild(app.view);
 
-        scaleToWindow(renderer.view);
+        scaleToWindow(app.renderer.view);
 
         // Global variables
-        var WIDTH =  renderer.view.width,
-            HEIGHT = renderer.view.height,
+        var WIDTH =  app.renderer.view.width,
+            HEIGHT = app.renderer.view.height,
             spin,
-            spinning,
             honeycomb,
+            reelContainer,
             mask,
             button,
             REEL_WIDTH = 196,
@@ -31,68 +26,83 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             HONEY_COMB_CELL_WIDTH = 196,
             HONEY_COMB_CELL_HEIGHT = 170,
             TOTAL_SYMBOLS_REEL = 4,
-            ALL_SYMBOLS = 9,
             TOTAL_REELS = 5,
             SPACE = 7,
             INDENT = 30,
             reelsArray = [],
             slotTextures = [],
             state,
-            allSymbols = [],
+            reelOneSymbols = [],
             i;
 
         // Load resources
         loader
-            .add([
-                "images/background.png",
-                "images/honeycomb.png",
-                "images/symbols.json"
-        ])
+            .add("images/background.png")
+            .add("images/honeycomb.png")
+            .add("images/bear.png")
+            .add("images/bee.png")
+            .add("images/blue-bee.png")
+            .add("images/green-bee.png")
+            .add("images/red-bee.png")
+            .add("images/bomb.png")
+            .add("images/button.png")
+            .add("images/green-frog.png")
+            .add("images/red-frog.png")
+            .on('progress', loadProgressHandler)
             .load(setup);
+
+        function loadProgressHandler (loader, resource) {
+            // Display the file url currently being loaded
+            console.log(`loading...: ${resource.url}`);
+
+            // Display percentage of files currently loaded
+            console.log(`progress: ${loader.progress}%`)
+        }
 
         function randomNumber (num) {
             return Math.floor(Math.random() * num);
-        };
-        
-        function setup () {
+        }
 
-            // Create alias
-            var id = PIXI.loader.resources['images/symbols.json'].textures;
+        function setup () {
+            console.log('All files loaded');
 
             // Create textures
             slotTextures.push(
-                id['bear.png'],
-                id['bee.png'],
-                id['blue-bee.png'],
-                id['bomb.png'],
-                id['green-bee.png'],
-                id['green-frog.png'],
-                id['pot.png'],
-                id['red-bee.png'],
-                id['red-frog.png']
+                PIXI.Texture.from('images/bear.png'),
+                PIXI.Texture.from('images/bee.png'),
+                PIXI.Texture.from('images/blue-bee.png'),
+                PIXI.Texture.from('images/bomb.png'),
+                PIXI.Texture.from('images/green-bee.png'),
+                PIXI.Texture.from('images/green-frog.png'),
+                PIXI.Texture.from('images/pot.png'),
+                PIXI.Texture.from('images/red-bee.png'),
+                PIXI.Texture.from('images/red-frog.png')
             );
-			
-            // Create all symbols
-            for (i = 0; i < ALL_SYMBOLS; i++) {
-                var symbol = new Sprite(slotTextures[i]);
-                allSymbols.push(symbol);
+
+            // Create all symbols for reel 1
+            for (var k = 0; k < 16; k++) {
+                var rand = randomNumber(9);
+                var symbol = new Sprite(slotTextures[rand]);
+                reelOneSymbols.push(symbol);
             }
+            // console.log('reelOneSymbols', reelOneSymbols);
 
             // Create honeycomb sprite
-            var honeycombTexture =  PIXI.utils.TextureCache['images/honeycomb.png'];
+            var honeycombTexture = PIXI.Texture.from('images/honeycomb.png');
             honeycomb = new Sprite(honeycombTexture);
 
             honeycomb.y = (HEIGHT - honeycomb.height) / 2;
             honeycomb.x = (WIDTH - honeycomb.width) / 2;
 
             // Create background mask
-            var maskTexture = PIXI.utils.TextureCache['images/background.png'];
+            var maskTexture = PIXI.Texture.from('images/background.png');
             mask = new Sprite(maskTexture);
-            mask.x =  stage.x - (honeycomb.width / 2) + SPACE;
+            mask.x =  (WIDTH - mask.width) / 2;
+            mask.y =  (HEIGHT - mask.height) / 2;
 
             // Create button sprite
-            var buttonTexture = TextureCache['button.png'];
-            button =  new Sprite(buttonTexture);
+            var buttonTexture = PIXI.Texture.from('images/button.png');
+            button = new Sprite(buttonTexture);
 
             // Make button interactive
             button.interactive = true;
@@ -106,10 +116,10 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                     spin = true;
                 });
 
-            var reelContainer = new PIXI.Container();
+            reelContainer = new PIXI.Container();
 
             // Build child reels
-            for (i = 0; i < TOTAL_REELS; i++) {
+            for (i = 0; i < 1; i++) {
                 var randomImageNumbers = [],
                     num;
 
@@ -120,7 +130,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 if (i % 2 === 0) {
                     reelChild.y = 0;
                 } else {
-                    reelChild.y = 0 + SYMBOL_HEIGHT / 2;
+                    reelChild.y = SYMBOL_HEIGHT / 2;
                 }
 
                 reelContainer.addChild(reelChild);
@@ -128,76 +138,87 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 // reelObject
                 var reelObject = {
                     container: reelChild,
-                    symbolIndexes: [],
-                    symbols:[],
-                    vy: 0,
-                    y: 0
+                    symbols: [],
+                    current: 0,
+                    target: 0
                 };
 
-                // Initialise reels at start
-                for (var ii = 0; ii < TOTAL_SYMBOLS_REEL; ii++) {
-                    num = randomNumber(9); 
-                    randomImageNumbers.push(num);
-                    reelObject.symbolIndexes.push(num);
-                }
-                // console.log('randomImageNumbers: ', randomImageNumbers);
-
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
-                    var symbol = new Sprite(slotTextures[randomImageNumbers[j]]);
-                    // Position symbol vertically
+                    var symbol = reelOneSymbols[j];
+                    // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
-                    reelObject.symbols.push(symbol);
-                    reelChild.addChild(symbol);
+                    reelObject.symbols.push(symbol); // Add symbol to reelObject
+                    reelChild.addChild(symbol); // Add symbol to reelChild
                 }
                 reelsArray.push(reelObject);
             }
 
             // Add to stage
-            stage.addChildAt(honeycomb, 0);
-            stage.addChildAt(reelContainer, 1);
-            stage.addChildAt(mask, 2);
-            stage.addChildAt(button, 3);
+            app.stage.addChildAt(honeycomb, 0);
+            app.stage.addChildAt(reelContainer, 1);
+            app.stage.addChildAt(mask, 2);
+            app.stage.addChildAt(button, 3);
 
 
             reelContainer.x = honeycomb.x;
-            reelContainer.y = honeycomb.y - SYMBOL_HEIGHT;
+            reelContainer.y = honeycomb.y - SYMBOL_HEIGHT; // Position reelContainer one symbol height above honeycomb to hide extra symbol
             // console.log('honeycomb.y: ', honeycomb.y);
             // console.log('honeycomb.x: ', honeycomb.x);
 
             // Update game state
             state = play;
 
+            app.renderer.render(app.stage);
+
             // Start game loop
-            gameLoop();
+            app.ticker.add(function (delta) {
+                gameLoop(delta);
+            });
         }
 
         function gameLoop () {
-            window.requestAnimationFrame(gameLoop);
+            // Update game state
             state();
-            renderer.render(stage);
         }
 
-        function play () {
+        function play (delta) {
             if (spin) {
                 spin = null;
 
-                for (i = 0; i < reelsArray.length; i++) {
-                    // Iterate through every reelChild
-                    var reelObject = reelsArray[i];
-                    var symbols = reelObject.symbols;
+                startSpin();
 
-                    // Update symbol positions
-                    for (var j = 0; j < symbols.length; j++) {
-                        var symbol = symbols[j];
-                        var posY = j * SYMBOL_HEIGHT;
-                        TweenLite.to(symbol, 2, {y: posY + SYMBOL_HEIGHT});
+                // Update slots
+                function updateSymbols () {
+                    for (i = 0; i < reelsArray.length; i++  ) {
+                        var reelObject = reelsArray[i];
+                        var symbols = reelObject.symbols;
+                        var index = Math.floor(reelObject.current);
+                        var decimals = reelObject.current - index;
+
+                        // Update symbol positions
+                        for (var j = 0; j < symbols.length; j++) {
+                            var symbol = symbols[j];
+                            var OFFSET = j * SYMBOL_HEIGHT - SYMBOL_HEIGHT;
+                            symbol.y = decimals * SYMBOL_HEIGHT + OFFSET;
+                            var symbolType = reelOneSymbols[(index + 3 - j) % reelOneSymbols.length];
+
+                            // Check current symbol texture with new texture in reel config
+                            if (symbol.texture !== symbolType.texture) {
+                                symbol.texture = symbolType.texture
+                            }
+                        }
+                    }
+                }
+
+                function startSpin () {
+                    for (i = 0; i < reelsArray.length; i++) {
+                        var reelObject = reelsArray[i];
+                        reelObject.target = reelObject.target + Math.floor(Math.random() * reelOneSymbols.length + reelOneSymbols.length * 2);
+                        var time = (reelObject.target - reelObject.current) * 500;
+                        createjs.Tween.get(reelObject, {onChange: updateSymbols}).to( {current: reelObject.target}, time);
                     }
                 }
             }
-        }
-
-        function gameOver () {
-
         }
     }
 });
