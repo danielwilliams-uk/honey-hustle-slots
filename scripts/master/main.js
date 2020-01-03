@@ -7,6 +7,6 @@ requirejs.config({
     }
 });
 
-requirejs(['vendor/pixi.min', 'vendor/gsap.min', 'utils/scaleToWindow', 'app/game'], function (pixi, gsap, scaleToWindow, game) {
+requirejs(['vendor/pixi.min', 'vendor/tweenjs', 'utils/scaleToWindow', 'app/game'], function (pixi, createjs, scaleToWindow, game) {
     game();
 });
