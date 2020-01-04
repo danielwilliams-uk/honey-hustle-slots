@@ -2,12 +2,9 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
     return function () {
 
-        // Aliases
         var app = new PIXI.Application({
                 width: 2267, height: 1275
             }),
-            TextureCache = PIXI.utils.TextureCache,
-            resources = PIXI.Loader.shared.resources,
             Sprite = PIXI.Sprite,
             loader = PIXI.Loader.shared;
 
@@ -15,7 +12,6 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
         scaleToWindow(app.renderer.view);
 
-        // Global variables
         var WIDTH =  app.renderer.view.width,
             HEIGHT = app.renderer.view.height,
             spin,
@@ -40,7 +36,6 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             allReelsSymbols = [],
             i;
 
-        // Load resources
         loader
             .add("images/background.png")
             .add("images/honeycomb.png")
