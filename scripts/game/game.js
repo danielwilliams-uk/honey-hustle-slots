@@ -19,7 +19,6 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
         var WIDTH =  app.renderer.view.width,
             HEIGHT = app.renderer.view.height,
             spin,
-            spinning,
             honeycomb,
             reelContainer,
             mask,
@@ -27,17 +26,18 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             REEL_WIDTH = 196,
             SYMBOL_WIDTH = 196,
             SYMBOL_HEIGHT = 170,
-            HONEY_COMB_CELL_WIDTH = 196,
-            HONEY_COMB_CELL_HEIGHT = 170,
             TOTAL_SYMBOLS_REEL = 4,
-            ALL_SYMBOLS = 9,
             TOTAL_REELS = 5,
-            SPACE = 7,
             INDENT = 30,
             reelsArray = [],
             slotTextures = [],
             state,
             reelOneSymbols = [],
+            reelTwoSymbols = [],
+            reelThreeSymbols = [],
+            reelFourSymbols = [],
+            reelFiveSymbols = [],
+            allReelsSymbols = [],
             i;
 
         // Load resources
@@ -53,7 +53,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             .add("images/button.png")
             .add("images/green-frog.png")
             .add("images/red-frog.png")
-            .on('progress', loadProgressHandler)
+            //.on('progress', loadProgressHandler)
             .load(setup);
 
         // Get percentage total of resources that have loaded and name
@@ -85,13 +85,28 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 PIXI.Texture.from('images/red-frog.png')
             );
 
-            // Create all symbols for reel 1
+            // Create all symbols for reel one
             for (var k = 0; k < 16; k++) {
                 var rand = randomNumber(9);
                 var symbol = new Sprite(slotTextures[rand]);
                 reelOneSymbols.push(symbol);
             }
-            console.log('reelOneSymbols', reelOneSymbols);
+
+            // Clone deep and shuffle to create remaining 4 reels
+            reelTwoSymbols = _.cloneDeep(reelOneSymbols);
+            reelTwoSymbols = _.shuffle(reelTwoSymbols);
+
+            reelThreeSymbols = _.cloneDeep(reelTwoSymbols);
+            reelThreeSymbols = _.shuffle(reelThreeSymbols);
+
+            reelFourSymbols = _.cloneDeep(reelThreeSymbols);
+            reelFourSymbols = _.shuffle(reelTwoSymbols);
+
+            reelFiveSymbols = _.cloneDeep(reelFourSymbols);
+            reelFiveSymbols = _.shuffle(reelFiveSymbols);
+
+            allReelsSymbols.push(reelOneSymbols, reelTwoSymbols, reelThreeSymbols, reelFourSymbols, reelFiveSymbols);
+            //console.log('allReelsSymbols: ', allReelsSymbols);
 
             // Create honeycomb sprite
             var honeycombTexture = PIXI.Texture.from('images/honeycomb.png');
@@ -125,10 +140,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             reelContainer = new PIXI.Container();
 
             // Build child reels
-            for (i = 0; i < 1; i++) {
-                var randomImageNumbers = [],
-                    num;
-
+            for (i = 0; i < TOTAL_REELS; i++) {
                 var reelChild = new PIXI.Container();
 
                 reelChild.x = i * ((REEL_WIDTH - INDENT) - 20);
@@ -151,7 +163,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
                 // Symbols created and added to stage
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
-                    var symbol = reelOneSymbols[j];
+                    var rand = randomNumber(16);
+                    var symbol = allReelsSymbols[j][rand];
 
                     // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
