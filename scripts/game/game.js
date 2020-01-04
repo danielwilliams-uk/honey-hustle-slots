@@ -2,9 +2,12 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
     return function () {
 
+        // Aliases
         var app = new PIXI.Application({
                 width: 2267, height: 1275
             }),
+            TextureCache = PIXI.utils.TextureCache,
+            resources = PIXI.Loader.shared.resources,
             Sprite = PIXI.Sprite,
             loader = PIXI.Loader.shared;
 
@@ -16,6 +19,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
         var WIDTH =  app.renderer.view.width,
             HEIGHT = app.renderer.view.height,
             spin,
+            spinning,
             honeycomb,
             reelContainer,
             mask,
@@ -26,6 +30,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             HONEY_COMB_CELL_WIDTH = 196,
             HONEY_COMB_CELL_HEIGHT = 170,
             TOTAL_SYMBOLS_REEL = 4,
+            ALL_SYMBOLS = 9,
             TOTAL_REELS = 5,
             SPACE = 7,
             INDENT = 30,
@@ -51,6 +56,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             .on('progress', loadProgressHandler)
             .load(setup);
 
+        // Get percentage total of resources that have loaded and name
         function loadProgressHandler (loader, resource) {
             // Display the file url currently being loaded
             console.log(`loading...: ${resource.url}`);
@@ -85,7 +91,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 var symbol = new Sprite(slotTextures[rand]);
                 reelOneSymbols.push(symbol);
             }
-            // console.log('reelOneSymbols', reelOneSymbols);
+            console.log('reelOneSymbols', reelOneSymbols);
 
             // Create honeycomb sprite
             var honeycombTexture = PIXI.Texture.from('images/honeycomb.png');
@@ -143,8 +149,10 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                     target: 0
                 };
 
+                // Symbols created and added to stage
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
                     var symbol = reelOneSymbols[j];
+
                     // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
                     reelObject.symbols.push(symbol); // Add symbol to reelObject
@@ -161,7 +169,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
 
             reelContainer.x = honeycomb.x;
-            reelContainer.y = honeycomb.y - SYMBOL_HEIGHT; // Position reelContainer one symbol height above honeycomb to hide extra symbol
+            reelContainer.y = honeycomb.y /*- SYMBOL_HEIGHT*/; // Position reelContainer one symbol height above honeycomb to hide extra symbol
             // console.log('honeycomb.y: ', honeycomb.y);
             // console.log('honeycomb.x: ', honeycomb.x);
 
@@ -213,8 +221,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 function startSpin () {
                     for (i = 0; i < reelsArray.length; i++) {
                         var reelObject = reelsArray[i];
-                        reelObject.target = reelObject.target + Math.floor(Math.random() * reelOneSymbols.length + reelOneSymbols.length * 2);
-                        var time = (reelObject.target - reelObject.current) * 500;
+                        reelObject.target = reelObject.target + Math.floor(Math.random() * reelOneSymbols.length + reelOneSymbols.length * 1);
+                        var time = (reelObject.target - reelObject.current) * 80;
                         createjs.Tween.get(reelObject, {onChange: updateSymbols}).to( {current: reelObject.target}, time);
                     }
                 }
