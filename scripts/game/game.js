@@ -23,9 +23,9 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             reelContainer,
             mask,
             button,
-            REEL_WIDTH = 196,
-            SYMBOL_WIDTH = 196,
-            SYMBOL_HEIGHT = 170,
+            REEL_WIDTH = 274,
+            SYMBOL_WIDTH = 274,
+            SYMBOL_HEIGHT = 238,
             TOTAL_SYMBOLS_REEL = 4,
             TOTAL_REELS = 5,
             INDENT = 30,
@@ -89,8 +89,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             // Create background mask
             var maskTexture = PIXI.Texture.from('images/background.png');
             mask = new Sprite(maskTexture);
-            mask.x =  (WIDTH - mask.width) / 2;
-            mask.y =  (HEIGHT - mask.height) / 2;
+            mask.x =  ((WIDTH - mask.width) / 2) + 1;
+            mask.y =  ((HEIGHT - mask.height) / 2) - 2;
 
             // Create button sprite
             var buttonTexture = PIXI.Texture.from('images/button.png');
@@ -108,7 +108,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             for (i = 0; i < TOTAL_REELS; i++) {
                 var reelChild = new PIXI.Container();
 
-                reelChild.x = i * ((REEL_WIDTH - INDENT) - 20);
+                reelChild.x = i * ((REEL_WIDTH - INDENT) - 40);
 
                 if (i % 2 === 0) {
                     reelChild.y = 0;
@@ -123,8 +123,12 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                     container: reelChild,
                     symbols: [],
                     current: 0,
-                    target: 0
+                    target: 0,
+                    blur: new PIXI.filters.BlurFilter()
                 };
+                reelObject.blur.blurX = 0;
+                reelObject.blur.blurY = 0;
+                reelChild.filters = [reelObject.blur];
 
                 // Create symbols
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
@@ -147,9 +151,10 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
 
             reelContainer.x = honeycomb.x;
-            reelContainer.y = honeycomb.y /*- SYMBOL_HEIGHT*/; // Position reelContainer one symbol height above honeycomb to hide extra symbol
+            reelContainer.y = honeycomb.y - SYMBOL_HEIGHT; // Position reelContainer one symbol height above honeycomb to hide extra symbol
 
             app.renderer.render(app.stage);
+            console.log('reels array: ', reelsArray);
 
             button
                 .on('mousedown', function () {
@@ -165,7 +170,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             for (i = 0; i < reelsArray.length; i++) {
                 var reelObject = reelsArray[i];
                 reelObject.target = reelObject.target + Math.floor(Math.random() * 9 + 9 * 1);
-                var time = (reelObject.target - reelObject.current) * 500;
+                var time = (reelObject.target - reelObject.current) * 80;
                 createjs.Tween.get(reelObject, {onChange: updateSymbols}).to({current: reelObject.target}, time);
             }
         }
@@ -179,7 +184,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 var symbols = reelObject.symbols;
                 var index = Math.floor(reelObject.current);
                 var decimals = reelObject.current - index;
-
+                //reelObject.blur.blurY = (reelObject.target - reelObject.current) * 1; // TODO: why does activating blur cause issues with fuzziness as symbols move
                 // Update symbol positions
                 for (var j = 0; j < symbols.length; j++) {
                     var symbol = symbols[j];
