@@ -137,8 +137,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
                     // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
-                    reelObject.symbols.push(symbol); // Add symbol to reelObject
-                    reelChild.addChild(symbol); // Add symbol to reelChild
+                    reelObject.symbols.push(symbol);
+                    reelChild.addChild(symbol);
                 }
                 reelsArray.push(reelObject);
             }
@@ -151,7 +151,7 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
 
             reelContainer.x = honeycomb.x;
-            reelContainer.y = honeycomb.y - SYMBOL_HEIGHT; // Position reelContainer one symbol height above honeycomb to hide extra symbol
+            reelContainer.y = honeycomb.y /*- SYMBOL_HEIGHT*/; // Position reelContainer one symbol height above honeycomb to hide extra symbol
 
             app.renderer.render(app.stage);
             console.log('reels array: ', reelsArray);
@@ -184,13 +184,14 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 var symbols = reelObject.symbols;
                 var index = Math.floor(reelObject.current);
                 var decimals = reelObject.current - index;
-                //reelObject.blur.blurY = (reelObject.target - reelObject.current) * 1; // TODO: why does activating blur cause issues with fuzziness as symbols move
+                reelObject.blur.blurY = (reelObject.target - reelObject.current) * 3;
+
                 // Update symbol positions
                 for (var j = 0; j < symbols.length; j++) {
                     var symbol = symbols[j];
                     var OFFSET = j * SYMBOL_HEIGHT - SYMBOL_HEIGHT;
                     symbol.y = decimals * SYMBOL_HEIGHT + OFFSET;
-                    var symbolType = slotTextures[(index + 3 - j) % slotTextures.length *2];
+                    var symbolType = slotTextures[(index + 3 - j) % slotTextures.length];
 
                     // Check current symbol texture with new texture in reel config
                     if (symbol.texture !== symbolType) {
