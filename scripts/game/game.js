@@ -1,28 +1,36 @@
-define(['utils/scaleToWindow'], function (scaleToWindow) {
+define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, SplashScreen) {
 
     return function () {
+
+        var wrapper = document.querySelector("#wrapper");
+        //Add a requestFullscreen polyfill to the wrapper
+        var vendors = ["ms", "webkit", "o", "moz"];
+        vendors.forEach(function (vendor) {
+            if (!wrapper.requestFullscreen) {
+                wrapper.requestFullscreen = wrapper[vendor + "RequestFullscreen"];
+            }
+        });
 
         // Aliases
         var app = new PIXI.Application({
                 width: 2267, height: 1275
             }),
-            TextureCache = PIXI.utils.TextureCache,
-            resources = PIXI.Loader.shared.resources,
+            Container = PIXI.Container,
             Sprite = PIXI.Sprite,
             loader = PIXI.Loader.shared;
 
-        document.body.appendChild(app.view);
-
-        scaleToWindow(app.renderer.view);
+        wrapper.appendChild(app.view);
 
         // Global variables
         var WIDTH =  app.renderer.view.width,
             HEIGHT = app.renderer.view.height,
             spin = false,
             honeycomb,
+            splashScreenSprite,
             reelContainer,
             mask,
             button,
+            playButton,
             REEL_WIDTH = 274,
             SYMBOL_WIDTH = 274,
             SYMBOL_HEIGHT = 238,
@@ -36,6 +44,8 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
         // Load resources
         loader
+            .add("images/play-button.png")
+            .add("images/splash-screen.png")
             .add("images/background.png")
             .add("images/honeycomb.png")
             .add("images/bear.png")
@@ -79,6 +89,56 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
                 PIXI.Texture.from('images/red-frog.png')
             );
 
+            var introScene = new Container();
+            var gameScene = new Container();
+            var maskContainer = new Container();
+
+            introScene.scale.x = 0.5;
+            introScene.scale.y = 0.5;
+
+            app.stage.addChildAt(gameScene, 0);
+            app.stage.addChildAt(maskContainer,1);
+            app.stage.addChildAt(introScene, 2);
+
+            gameScene.alpha = 0;
+            maskContainer.alpha = 0;
+
+            var splashScreenTexture = PIXI.Texture.from('images/splash-screen.png');
+            splashScreenSprite = new PIXI.Sprite(splashScreenTexture);
+            splashScreenSprite.alpha = 1;
+            splashScreenSprite.x = WIDTH / 2;
+            splashScreenSprite.y = ((HEIGHT- splashScreenSprite.height) / 2);
+
+            // introScene.addChild(splashScreenSprite);
+
+            // Create splash screen
+            var splashScreenChild = new SplashScreen();
+
+            // Create play button
+            var playButtonTexture = PIXI.Texture.from('images/play-button.png');
+            playButton = new PIXI.Sprite(playButtonTexture);
+            playButton.x = (WIDTH - playButton.width) / 2;
+            playButton.y = (HEIGHT - playButton.height * 2);
+
+            introScene.addChild(playButton);
+
+            // Make interactive
+            playButton.interactive = true;
+            playButton.buttonMode = true;
+
+            // Play button handler
+            playButton
+                .on('mousedown', function () {
+                    wrapper.requestFullscreen();
+                    createjs.Tween.get(gameScene).to({alpha: 1}, 2000);
+                    splashScreenChild.hideSplashScreen(introScene)
+                        .then(function (value) {
+                            if (value) {
+                                maskContainer.alpha = 1;
+                            }
+                        })
+                });
+
             // Create honeycomb sprite
             var honeycombTexture = PIXI.Texture.from('images/honeycomb.png');
             honeycomb = new Sprite(honeycombTexture);
@@ -103,6 +163,25 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             button.y = HEIGHT - button.height * 2;
 
             reelContainer = new PIXI.Container();
+
+            var reelConfig1 = [];
+            var reelConfig2 = [];
+            var reelConfig3 = [];
+            var reelConfig4 = [];
+            var reelConfig5 = [];
+            var allReelConfigs = [];
+
+            // Add all reelConfigs to array
+            allReelConfigs.push(reelConfig1, reelConfig2, reelConfig3, reelConfig4, reelConfig5);
+
+            for (i = 0; i < allReelConfigs.length; i++ ) {
+                var rand = randomNumber(9);
+                var arr = allReelConfigs[i];
+                for (var j = 0; j < 16; j++) {
+                    arr.push(new Sprite(slotTextures[rand]));
+                }
+            }
+            console.log('allReelConfigs: ', allReelConfigs);
 
             // Build child reels
             for (i = 0; i < TOTAL_REELS; i++) {
@@ -132,8 +211,9 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
 
                 // Create symbols
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
-                    var rand = randomNumber(9);
-                    var symbol = new Sprite(slotTextures[rand]);
+                    //var rand = randomNumber(9);
+                    // var symbol = new Sprite(slotTextures[rand]);
+                    var symbol = allReelConfigs[i][j];
 
                     // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
@@ -144,10 +224,11 @@ define(['utils/scaleToWindow'], function (scaleToWindow) {
             }
 
             // Add to stage
-            app.stage.addChildAt(honeycomb, 0);
-            app.stage.addChildAt(reelContainer, 1);
-            app.stage.addChildAt(mask, 2);
-            app.stage.addChildAt(button, 3);
+            gameScene.addChildAt(honeycomb, 0);
+            gameScene.addChildAt(reelContainer, 1);
+
+            maskContainer.addChildAt(mask, 0);
+            maskContainer.addChildAt(button, 1);
 
 
             reelContainer.x = honeycomb.x;
