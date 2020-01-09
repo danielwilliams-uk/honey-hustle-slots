@@ -106,14 +106,12 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             // Play button handler
             playButton.addEventListener('mousedown', function () {
                 wrapper.requestFullscreen();
-                //gameScene.visible = true;
-                //maskContainer.alpha = 1;
                 wrapper.style.display = 'block';
                 createjs.Tween.get(gameScene).to({alpha: 1}, 2000);
                 splashScreenChild.hideSplashScreen(splashScreenEle, playButton)
                     .then(function (value) {
                         if (value) {
-                            maskContainer.alpha = 1; // I had this above  but it was choppy and coming in too quick.
+                            maskContainer.alpha = 1;
                         }
                     })
             });
