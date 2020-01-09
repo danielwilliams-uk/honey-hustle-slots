@@ -26,7 +26,6 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             HEIGHT = app.renderer.view.height,
             spin = false,
             honeycomb,
-            splashScreenSprite,
             reelContainer,
             mask,
             button,
@@ -89,55 +88,35 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
                 PIXI.Texture.from('images/red-frog.png')
             );
 
-            var introScene = new Container();
             var gameScene = new Container();
             var maskContainer = new Container();
 
-            introScene.scale.x = 0.5;
-            introScene.scale.y = 0.5;
-
             app.stage.addChildAt(gameScene, 0);
             app.stage.addChildAt(maskContainer,1);
-            app.stage.addChildAt(introScene, 2);
 
             gameScene.alpha = 0;
             maskContainer.alpha = 0;
 
-            var splashScreenTexture = PIXI.Texture.from('images/splash-screen.png');
-            splashScreenSprite = new PIXI.Sprite(splashScreenTexture);
-            splashScreenSprite.alpha = 1;
-            splashScreenSprite.x = WIDTH / 2;
-            splashScreenSprite.y = ((HEIGHT- splashScreenSprite.height) / 2);
-
-            // introScene.addChild(splashScreenSprite);
-
-            // Create splash screen
+            // Create splash screen object
             var splashScreenChild = new SplashScreen();
-
-            // Create play button
-            var playButtonTexture = PIXI.Texture.from('images/play-button.png');
-            playButton = new PIXI.Sprite(playButtonTexture);
-            playButton.x = (WIDTH - playButton.width) / 2;
-            playButton.y = (HEIGHT - playButton.height * 2);
-
-            introScene.addChild(playButton);
-
-            // Make interactive
-            playButton.interactive = true;
-            playButton.buttonMode = true;
+            // Get the splash screen and play button elements
+            var splashScreenEle = document.getElementById('imgbox');
+            playButton = document.getElementById('playButton');
 
             // Play button handler
-            playButton
-                .on('mousedown', function () {
-                    wrapper.requestFullscreen();
-                    createjs.Tween.get(gameScene).to({alpha: 1}, 2000);
-                    splashScreenChild.hideSplashScreen(introScene)
-                        .then(function (value) {
-                            if (value) {
-                                maskContainer.alpha = 1;
-                            }
-                        })
-                });
+            playButton.addEventListener('mousedown', function () {
+                wrapper.requestFullscreen();
+                //gameScene.visible = true;
+                //maskContainer.alpha = 1;
+                wrapper.style.display = 'block';
+                createjs.Tween.get(gameScene).to({alpha: 1}, 2000);
+                splashScreenChild.hideSplashScreen(splashScreenEle, playButton)
+                    .then(function (value) {
+                        if (value) {
+                            maskContainer.alpha = 1; // I had this above  but it was choppy and coming in too quick.
+                        }
+                    })
+            });
 
             // Create honeycomb sprite
             var honeycombTexture = PIXI.Texture.from('images/honeycomb.png');
@@ -175,13 +154,13 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             allReelConfigs.push(reelConfig1, reelConfig2, reelConfig3, reelConfig4, reelConfig5);
 
             for (i = 0; i < allReelConfigs.length; i++ ) {
-                var rand = randomNumber(9);
                 var arr = allReelConfigs[i];
+
                 for (var j = 0; j < 16; j++) {
+                    var rand = randomNumber(9);
                     arr.push(new Sprite(slotTextures[rand]));
                 }
             }
-            console.log('allReelConfigs: ', allReelConfigs);
 
             // Build child reels
             for (i = 0; i < TOTAL_REELS; i++) {
@@ -211,8 +190,6 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
                 // Create symbols
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
-                    //var rand = randomNumber(9);
-                    // var symbol = new Sprite(slotTextures[rand]);
                     var symbol = allReelConfigs[i][j];
 
                     // Position symbols vertically
@@ -230,12 +207,11 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             maskContainer.addChildAt(mask, 0);
             maskContainer.addChildAt(button, 1);
 
-
             reelContainer.x = honeycomb.x;
             reelContainer.y = honeycomb.y /*- SYMBOL_HEIGHT*/; // Position reelContainer one symbol height above honeycomb to hide extra symbol
 
             app.renderer.render(app.stage);
-            console.log('reels array: ', reelsArray);
+            //console.log('reels array: ', reelsArray);
 
             button
                 .on('mousedown', function () {
@@ -250,8 +226,9 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
             for (i = 0; i < reelsArray.length; i++) {
                 var reelObject = reelsArray[i];
-                reelObject.target = reelObject.target + Math.floor(Math.random() * 9 + 9 * 1);
-                var time = (reelObject.target - reelObject.current) * 80;
+                var delay = Math.floor(Math.random() * 3);
+                reelObject.target = reelObject.target + 3 * 16 + 16 * 2 + delay;
+                var time = (reelObject.target - reelObject.current) + i * 300 + delay * 300;
                 createjs.Tween.get(reelObject, {onChange: updateSymbols}).to({current: reelObject.target}, time);
             }
         }
