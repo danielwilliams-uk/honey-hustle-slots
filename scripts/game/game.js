@@ -38,8 +38,17 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             INDENT = 30,
             reelsArray = [],
             slotTextures = [],
+            reelConfig1 = [],
+            reelConfig2 = [],
+            reelConfig3 = [],
+            reelConfig4 = [],
+            reelConfig5 = [],
+            allReelConfigs = [],
             state,
             i;
+
+        // Add all reelConfigs to array
+        allReelConfigs.push(reelConfig1, reelConfig2, reelConfig3, reelConfig4, reelConfig5);
 
         // Load resources
         loader
@@ -141,24 +150,16 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
             reelContainer = new PIXI.Container();
 
-            var reelConfig1 = [];
-            var reelConfig2 = [];
-            var reelConfig3 = [];
-            var reelConfig4 = [];
-            var reelConfig5 = [];
-            var allReelConfigs = [];
-
-            // Add all reelConfigs to array
-            allReelConfigs.push(reelConfig1, reelConfig2, reelConfig3, reelConfig4, reelConfig5);
-
+            // Populate all reel configs
             for (i = 0; i < allReelConfigs.length; i++ ) {
                 var arr = allReelConfigs[i];
 
                 for (var j = 0; j < 16; j++) {
                     var rand = randomNumber(9);
-                    arr.push(new Sprite(slotTextures[rand]));
+                    arr.push(rand); // Push random number into array
                 }
             }
+            console.log('all reel configs', allReelConfigs);
 
             // Build child reels
             for (i = 0; i < TOTAL_REELS; i++) {
@@ -188,7 +189,8 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
                 // Create symbols
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
-                    var symbol = allReelConfigs[i][j];
+                    var arr = allReelConfigs[i]; // Get each reel config list
+                    var symbol = new Sprite(slotTextures[arr[j]]); // Create 4 sprites using first four values in reel config list
 
                     // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
@@ -225,8 +227,8 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             for (i = 0; i < reelsArray.length; i++) {
                 var reelObject = reelsArray[i];
                 var delay = Math.floor(Math.random() * 3);
-                reelObject.target = reelObject.target + 3 * 16 + 16 * 2 + delay;
-                var time = (reelObject.target - reelObject.current) + i * 300 + delay * 300;
+                reelObject.target = reelObject.target + Math.floor(Math.random() * 16 + 16 * 3) + delay;
+                var time = (reelObject.target - reelObject.current) + i * 200 + delay * 200;
                 createjs.Tween.get(reelObject, {onChange: updateSymbols}).to({current: reelObject.target}, time);
             }
         }
@@ -247,11 +249,14 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
                     var symbol = symbols[j];
                     var OFFSET = j * SYMBOL_HEIGHT - SYMBOL_HEIGHT;
                     symbol.y = decimals * SYMBOL_HEIGHT + OFFSET;
-                    var symbolType = slotTextures[(index + 3 - j) % slotTextures.length];
+
+                    var reelConfig = allReelConfigs[i]; // Each reel config list
+                    var symbolType = reelConfig[(index + 3 - j) % reelConfig.length];
+                    console.log('symbolType: ', symbolType);
 
                     // Check current symbol texture with new texture in reel config
-                    if (symbol.texture !== symbolType) {
-                        symbol.texture = symbolType;
+                    if (symbol.texture !== slotTextures[symbolType]) {
+                        symbol.texture = slotTextures[symbolType];
                     }
                 }
             }
