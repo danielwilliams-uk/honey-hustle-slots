@@ -37,7 +37,7 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             TOTAL_REELS = 5,
             INDENT = 30,
             reelsArray = [],
-            slotTextures = [],
+            symbolTextures = [],
             reelConfig1 = [],
             reelConfig2 = [],
             reelConfig3 = [],
@@ -52,19 +52,10 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
         // Load resources
         loader
-            .add("images/play-button.png")
             .add("images/splash-screen.png")
             .add("images/background.png")
             .add("images/honeycomb.png")
-            .add("images/bear.png")
-            .add("images/bee.png")
-            .add("images/blue-bee.png")
-            .add("images/green-bee.png")
-            .add("images/red-bee.png")
-            .add("images/bomb.png")
-            .add("images/button.png")
-            .add("images/green-frog.png")
-            .add("images/red-frog.png")
+            .add("images/symbols.json")
             //.on('progress', loadProgressHandler)
             .load(setup);
 
@@ -84,18 +75,22 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
         function setup () {
             console.log('All files loaded');
 
+            // Get reference to sprite sheet
+            var spriteSheet = PIXI.Loader.shared.resources["images/symbols.json"];
+            console.log('spriteSheet: ', spriteSheet);
+
             // Create textures
-            slotTextures.push(
-                PIXI.Texture.from('images/bear.png'),
-                PIXI.Texture.from('images/bee.png'),
-                PIXI.Texture.from('images/blue-bee.png'),
-                PIXI.Texture.from('images/bomb.png'),
-                PIXI.Texture.from('images/green-bee.png'),
-                PIXI.Texture.from('images/green-frog.png'),
-                PIXI.Texture.from('images/pot.png'),
-                PIXI.Texture.from('images/red-bee.png'),
-                PIXI.Texture.from('images/red-frog.png')
-            );
+            var bear = spriteSheet.textures["bear.png"],
+                bee = spriteSheet.textures["bee.png"],
+                blueBee = spriteSheet.textures["blue-bee.png"],
+                bomb = spriteSheet.textures["bomb.png"],
+                greenBee = spriteSheet.textures["green-bee.png"],
+                greenFrog = spriteSheet.textures["green-frog.png"],
+                pot = spriteSheet.textures["pot.png"],
+                redBee = spriteSheet.textures["red-bee.png"],
+                redFrog = spriteSheet.textures["red-frog.png"];
+
+            symbolTextures.push(bear,bee,blueBee,bomb,greenBee,greenFrog,pot,redBee,redFrog);
 
             var gameScene = new Container();
             var maskContainer = new Container();
@@ -139,7 +134,7 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             mask.y =  ((HEIGHT - mask.height) / 2) - 2;
 
             // Create button sprite
-            var buttonTexture = PIXI.Texture.from('images/button.png');
+            var buttonTexture = spriteSheet.textures["button.png"];
             button = new Sprite(buttonTexture);
 
             // Make button interactive
@@ -190,7 +185,7 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
                 // Create symbols
                 for (var j = 0; j < TOTAL_SYMBOLS_REEL; j++) {
                     var arr = allReelConfigs[i]; // Get each reel config list
-                    var symbol = new Sprite(slotTextures[arr[j]]); // Create 4 sprites using first four values in reel config list
+                    var symbol = new Sprite(symbolTextures[arr[j]]); // Create 4 sprites using first four values in reel config list
 
                     // Position symbols vertically
                     symbol.y = j * SYMBOL_HEIGHT;
@@ -253,8 +248,8 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
                     console.log('symbolType: ', symbolType);
 
                     // Check current symbol texture with new texture in reel config
-                    if (symbol.texture !== slotTextures[symbolType]) {
-                        symbol.texture = slotTextures[symbolType];
+                    if (symbol.texture !== symbolTextures[symbolType]) {
+                        symbol.texture = symbolTextures[symbolType];
                     }
                 }
             }
