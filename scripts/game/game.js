@@ -211,7 +211,6 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             reelContainer.y = honeycomb.y /*- SYMBOL_HEIGHT*/; // Position reelContainer one symbol height above honeycomb to hide extra symbol
 
             app.renderer.render(app.stage);
-            //console.log('reels array: ', reelsArray);
 
             button
                 .on('mousedown', function () {
