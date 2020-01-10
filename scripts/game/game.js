@@ -208,7 +208,7 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             app.renderer.render(app.stage);
 
             button
-                .on('mousedown', function () {
+                .on('pointerdown', function () {
                     console.log('click!');
                     startSpin();
                 });
