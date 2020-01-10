@@ -225,9 +225,8 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
             for (i = 0; i < reelsArray.length; i++) {
                 var reelObject = reelsArray[i];
-                var delay = Math.floor(Math.random() * 3);
-                reelObject.target = reelObject.target + Math.floor(Math.random() * 16 + 16 * 3) + delay;
-                var time = (reelObject.target - reelObject.current) + i * 200 + delay * 200;
+                reelObject.target = reelObject.target + Math.floor(Math.random() * 16 + 16 * (3 + i));
+                var time = (reelObject.target - reelObject.current) * 80;
                 createjs.Tween.get(reelObject, {onChange: updateSymbols}).to({current: reelObject.target}, time);
             }
         }
