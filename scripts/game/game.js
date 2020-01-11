@@ -104,9 +104,8 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
             // Create splash screen object
             var splashScreenChild = new SplashScreen();
             // Get the splash screen and play button elements
-            var splashScreenEle = document.getElementById('imgbox');
-            playButton = document.getElementById('playButton');
-
+            var splashScreenEle = document.getElementById('splashScreen');
+            var playButton = document.getElementById('playButton');
             // Play button handler
             playButton.addEventListener('mousedown', function () {
                 wrapper.requestFullscreen();
