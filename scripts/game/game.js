@@ -244,7 +244,7 @@ define(['utils/scaleToWindow', 'app/SplashScreen'], function (scaleToWindow, Spl
 
                     var reelConfig = allReelConfigs[i]; // Each reel config list
                     var symbolType = reelConfig[(index + 3 - j) % reelConfig.length];
-                    console.log('symbolType: ', symbolType);
+                    // console.log('symbolType: ', symbolType);
 
                     // Check current symbol texture with new texture in reel config
                     if (symbol.texture !== symbolTextures[symbolType]) {
